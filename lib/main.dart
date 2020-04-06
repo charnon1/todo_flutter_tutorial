@@ -28,28 +28,57 @@ class TodoListState extends State<TodoList> {
   List<String> _todoItems = [];
 
   void _addTodoItem(String task){
-
     if(task.length > 0 ){
       setState(() {
         _todoItems.add(task);
       });
     }
-    
+  }
+
+  void _removeTodoItem(int index){
+    setState(() {
+      _todoItems.removeAt(index);  
+    });
+  }
+
+  void _promptRemoveTodoItem(int index){
+    showDialog(
+      context: context,
+      builder: (BuildContext context){
+        return AlertDialog(
+          title: Text("Mark '${_todoItems[index]}' as done?"),
+          actions: <Widget>[
+            FlatButton(
+              child: Text("cancel"),
+              onPressed: () => Navigator.of(context).pop(),
+            ),
+            FlatButton(
+              child: Text("Done"),
+              onPressed: (){
+                _removeTodoItem(index);
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      }
+    );
   }
 
   Widget _buildTodoList(){
     return new ListView.builder(
       itemBuilder: (context, index) {
         if (index < _todoItems.length){
-          return _buildTodoItem(_todoItems[index]);
+          return _buildTodoItem(_todoItems[index], index);
         }
       },
     );
   }
 
-  Widget _buildTodoItem(String todoText){
+  Widget _buildTodoItem(String todoText, int index){
     return new ListTile(
       title: Text(todoText),
+      onTap: () => _promptRemoveTodoItem(index),
     );
   }
 
